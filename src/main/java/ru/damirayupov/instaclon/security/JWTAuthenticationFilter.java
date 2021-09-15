@@ -21,14 +21,12 @@ import java.util.Collections;
 
 public class JWTAuthenticationFilter extends OncePerRequestFilter {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(JWTAuthenticationFilter.class);
+    public static final Logger LOG = LoggerFactory.getLogger(JWTAuthenticationFilter.class);
 
     @Autowired
     private JWTTokenProvider jwtTokenProvider;
-
     @Autowired
     private CustomUserDetailsService customUserDetailsService;
-
 
     @Override
     protected void doFilterInternal(HttpServletRequest httpServletRequest, HttpServletResponse httpServletResponse, FilterChain filterChain) throws ServletException, IOException {
@@ -39,20 +37,22 @@ public class JWTAuthenticationFilter extends OncePerRequestFilter {
                 User userDetails = customUserDetailsService.loadUserById(userId);
 
                 UsernamePasswordAuthenticationToken authentication = new UsernamePasswordAuthenticationToken(
-                        userDetails, null, Collections.emptyList());
+                        userDetails, null, Collections.emptyList()
+                );
 
-                authentication.setDetails(new WebAuthenticationDetailsSource().buildDetails(httpServletRequest));
+                authentication.setDetails(new WebAuthenticationDetailsSource().buildDetails(httpServletRequest));;
                 SecurityContextHolder.getContext().setAuthentication(authentication);
             }
-        } catch (Exception e){
-            LOGGER.error(e.getMessage());
+        } catch (Exception ex) {
+            LOG.error("Could not set user authentication");
         }
-        filterChain.doFilter(httpServletRequest, httpServletResponse) ;
+
+        filterChain.doFilter(httpServletRequest, httpServletResponse);
     }
 
-    private String getJWTFromRequest(HttpServletRequest httpServletRequest){
-        String bearToken = httpServletRequest.getHeader(SecurityConstants.HEADER_STRING);
-        if (StringUtils.hasText(bearToken) && bearToken.startsWith(SecurityConstants.TOKEN_PREFIX)){
+    private String getJWTFromRequest(HttpServletRequest request) {
+        String bearToken = request.getHeader(SecurityConstants.HEADER_STRING);
+        if (StringUtils.hasText(bearToken) && bearToken.startsWith(SecurityConstants.TOKEN_PREFIX)) {
             return bearToken.split(" ")[1];
         }
         return null;

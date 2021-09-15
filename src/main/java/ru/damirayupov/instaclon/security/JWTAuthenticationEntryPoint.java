@@ -16,8 +16,8 @@ import java.io.IOException;
 public class JWTAuthenticationEntryPoint implements AuthenticationEntryPoint {
     @Override
     public void commence(HttpServletRequest httpServletRequest, HttpServletResponse httpServletResponse, AuthenticationException e) throws IOException, ServletException {
-        InvalidLoginResponse invalidLoginResponse = new InvalidLoginResponse();
-        String jsonLoginResponse = new Gson().toJson(invalidLoginResponse);
+        InvalidLoginResponse loginResponse = new InvalidLoginResponse();
+        String jsonLoginResponse = new Gson().toJson(loginResponse);
         httpServletResponse.setContentType(SecurityConstants.CONTENT_TYPE);
         httpServletResponse.setStatus(HttpStatus.UNAUTHORIZED.value());
         httpServletResponse.getWriter().println(jsonLoginResponse);

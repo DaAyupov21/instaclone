@@ -47,7 +47,6 @@ public class UserController {
         ResponseEntity<Object> errors = getObjectResponseEntity(bindingResult);
         if(!ObjectUtils.isEmpty(errors)) return errors;
         User user = userService.updateUser(userDto, principal);
-
         return ResponseEntity.ok(from(user));
     }
 
